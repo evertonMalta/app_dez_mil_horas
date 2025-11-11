@@ -1,3 +1,4 @@
+import 'package:app_dez_mil_horas/controller/auth_controller.dart';
 import 'package:flutter/material.dart';
 import '../utils/app_routes.dart';
 
@@ -89,8 +90,9 @@ class AppDrawer extends StatelessWidget {
           FilledButton(
             child: const Text('Sair'),
             onPressed: () {
-              Navigator.of(ctx).pop();
-              Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+              //Navigator.of(ctx).pushReplacementNamed(AppRoutes.login);
+              AuthController().logout(ctx);
+              
             },
           ),
         ],

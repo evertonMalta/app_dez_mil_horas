@@ -1,8 +1,23 @@
+import 'package:app_dez_mil_horas/controller/auth_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import '../../utils/app_routes.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final ctrl = GetIt.I.get<AuthController>();
+
+  @override
+  void initState() {
+    super.initState();
+    ctrl.addListener(() => setState(() {}));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +60,7 @@ class LoginScreen extends StatelessWidget {
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                   keyboardType: TextInputType.emailAddress,
+                  controller: ctrl.txtEmail,
                 ),
                 const SizedBox(height: 16),
 
@@ -56,14 +72,14 @@ class LoginScreen extends StatelessWidget {
                     prefixIcon: Icon(Icons.lock_outline),
                   ),
                   obscureText: true,
+                  controller: ctrl.txtpassword,
                 ),
                 const SizedBox(height: 24),
 
                 // Botão de Entrar
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context)
-                        .pushReplacementNamed(AppRoutes.home);
+                    ctrl.login(context);                    
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),

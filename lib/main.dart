@@ -1,6 +1,9 @@
-import 'package:app_muito_brabo/screens/auth/forgot_password_screen.dart';
-import 'package:app_muito_brabo/screens/auth/login_screen.dart';
-import 'package:app_muito_brabo/screens/auth/signup_screen.dart';
+import 'package:app_dez_mil_horas/controller/auth_controller.dart';
+import 'package:get_it/get_it.dart';
+
+import 'screens/auth/forgot_password_screen.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/auth/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/add_edit_topic_screen.dart';
 import 'screens/home_screen.dart';
@@ -13,11 +16,15 @@ import 'utils/app_routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+final g = GetIt.instance;
 Future<void>  main() async{
   setupServiceLocator();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
+  g.registerSingleton<AuthController>(AuthController());
+
   runApp(const MyApp());
 }
 
