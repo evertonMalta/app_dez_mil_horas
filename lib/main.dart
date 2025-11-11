@@ -10,9 +10,14 @@ import 'screens/about_screen.dart';
 import 'screens/topic_detail_screen.dart';
 import 'services/service_locator.dart'; 
 import 'utils/app_routes.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+Future<void>  main() async{
   setupServiceLocator();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
