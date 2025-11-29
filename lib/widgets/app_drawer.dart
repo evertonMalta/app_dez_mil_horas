@@ -5,16 +5,12 @@ import '../utils/app_routes.dart';
 class AppDrawer extends StatelessWidget {
   final int currentPageIndex;
 
-  const AppDrawer({
-    super.key,
-    required this.currentPageIndex,
-  });
+  const AppDrawer({super.key, required this.currentPageIndex});
 
   @override
   Widget build(BuildContext context) {
     return NavigationDrawer(
       onDestinationSelected: (index) {
-
         if (index == currentPageIndex) {
           return;
         }
@@ -32,6 +28,9 @@ class AppDrawer extends StatelessWidget {
             Navigator.of(context).pushReplacementNamed(AppRoutes.about);
             break;
           case 3:
+            Navigator.of(context).pushReplacementNamed(AppRoutes.search);
+            break;
+          case 4:
             _showLogoutDialog(context);
             break;
         }
@@ -40,19 +39,14 @@ class AppDrawer extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(28, 16, 16, 10),
-          child: Text(
-            'Menu',
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
+          child: Text('Menu', style: Theme.of(context).textTheme.titleSmall),
         ),
         const NavigationDrawerDestination(
-          
           icon: Icon(Icons.home_outlined),
           selectedIcon: Icon(Icons.home),
           label: Text('Início'),
         ),
         const NavigationDrawerDestination(
-          
           icon: Icon(Icons.person_outline),
           selectedIcon: Icon(Icons.person),
           label: Text('Perfil'),
@@ -61,6 +55,11 @@ class AppDrawer extends StatelessWidget {
           icon: Icon(Icons.info_outline),
           selectedIcon: Icon(Icons.info),
           label: Text('Sobre'),
+        ),
+        const NavigationDrawerDestination(
+          icon: Icon(Icons.search),
+          selectedIcon: Icon(Icons.search),
+          label: Text('Pesquisar'),
         ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 28),
@@ -90,9 +89,7 @@ class AppDrawer extends StatelessWidget {
           FilledButton(
             child: const Text('Sair'),
             onPressed: () {
-              //Navigator.of(ctx).pushReplacementNamed(AppRoutes.login);
               AuthController().logout(ctx);
-              
             },
           ),
         ],

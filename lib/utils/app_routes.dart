@@ -5,6 +5,7 @@ class AppRoutes {
   static const logStudySession = '/log-study-session';
   static const profile = '/profile';
   static const about = '/about';
+  static const search = '/search';
   static const login = 'login';
   static const signup = '/signup';
   static const forgotPassword = '/forgot-password';

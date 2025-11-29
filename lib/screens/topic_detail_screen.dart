@@ -55,16 +55,12 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
     if (_topic == null) {
       return Scaffold(
         appBar: AppBar(),
-        body: const Center(
-          child: Text('Tópico não encontrado!'),
-        ),
+        body: const Center(child: Text('Tópico não encontrado!')),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_topic!.title),
-      ),
+      appBar: AppBar(title: Text(_topic!.title)),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
@@ -96,63 +92,165 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
           if (_topic!.subTopics.isEmpty)
             const Text('Nenhum sub-tópico cadastrado.')
           else
-            ..._topic!.subTopics.map((subTopic) => Card(
-                  margin: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: ListTile(
-                    title: Text(subTopic.title),
-                    trailing: Text(subTopic.totalTimeFormatted),
-                    onTap: () {
-                      Navigator.of(context).pushNamed(
-                        AppRoutes.topicDetail,
-                        arguments: subTopic.id,
-                      );
-                    },
-                  ),
-                )),
+            ..._topic!.subTopics.map(
+              (subTopic) => Card(
+                margin: const EdgeInsets.symmetric(vertical: 4.0),
+                child: ListTile(
+                  title: Text(subTopic.title),
+                  trailing: Text(subTopic.totalTimeFormatted),
+                  onTap: () {
+                    Navigator.of(
+                      context,
+                    ).pushNamed(AppRoutes.topicDetail, arguments: subTopic.id);
+                  },
+                  onLongPress: () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Opções'),
+                        content: const Text(
+                          'O que deseja fazer com este sub-tópico?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(ctx).pop();
+                              Navigator.of(context).pushNamed(
+                                AppRoutes.addEditTopic,
+                                arguments: {
+                                  'id': subTopic.id,
+                                  'action': 'edit',
+                                },
+                              );
+                            },
+                            child: const Text('Editar'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(ctx).pop();
+                              showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Confirmar Exclusão'),
+                                  content: const Text(
+                                    'Tem certeza? Isso apagará todos os sub-tópicos e sessões.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(ctx).pop(),
+                                      child: const Text('Cancelar'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        _topicProvider.deleteTopic(subTopic.id);
+                                        Navigator.of(ctx).pop();
+                                      },
+                                      child: const Text(
+                                        'Excluir',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Excluir',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
           const SizedBox(height: 24),
 
           // Seção de Sessões de Estudo
           _buildSectionTitle(
-              context, 'Sessões de Estudo', Icons.timer_outlined),
+            context,
+            'Sessões de Estudo',
+            Icons.timer_outlined,
+          ),
           if (_topic!.sessions.isEmpty)
             const Text('Nenhuma sessão de estudo registrada para este tópico.')
           else
-            ..._topic!.sessions.map((session) => Card(
-                  margin: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: ListTile(
-                    leading: const Icon(Icons.history_toggle_off),
-                    title: Text(
-                        '${session.durationInMinutes} minutos de estudo'),
-                    subtitle: Text(
-                      DateFormat('dd/MM/yyyy \'às\' HH:mm')
-                          .format(session.date),
-                    ),
+            ..._topic!.sessions.map(
+              (session) => Card(
+                margin: const EdgeInsets.symmetric(vertical: 4.0),
+                child: ListTile(
+                  leading: const Icon(Icons.history_toggle_off),
+                  title: Text('${session.durationInMinutes} minutos de estudo'),
+                  subtitle: Text(
+                    DateFormat('dd/MM/yyyy \'às\' HH:mm').format(session.date),
                   ),
-                )),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Excluir Sessão'),
+                          content: const Text(
+                            'Tem certeza que deseja excluir esta sessão?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(ctx).pop(),
+                              child: const Text('Cancelar'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                _topicProvider.deleteSession(
+                                  _topic!.id,
+                                  session.id,
+                                );
+                                Navigator.of(ctx).pop();
+                              },
+                              child: const Text(
+                                'Excluir',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-        FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.logStudySession, arguments: _topic!.id );
-        },
-        child: const Icon(Icons.punch_clock),
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).pushNamed(AppRoutes.logStudySession, arguments: _topic!.id);
+            },
+            child: const Icon(Icons.punch_clock),
+          ),
+          SizedBox(height: 20, width: 10),
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(
+                AppRoutes.addEditTopic,
+                arguments: {'parentId': _topic!.id, 'action': 'add_subtopic'},
+              );
+            },
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
-      SizedBox(height: 20, width: 10,),
-      FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.addEditTopic, arguments: _topic!.id );
-        },
-        child: const Icon(Icons.add),
-      ),
-      ],)
     );
   }
 
-  Widget _buildSectionTitle(
-      BuildContext context, String title, IconData icon) {
+  Widget _buildSectionTitle(BuildContext context, String title, IconData icon) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(

@@ -1,3 +1,4 @@
+import '../models/user_model.dart';
 import '/widgets/toast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,9 +9,12 @@ class AuthController extends ChangeNotifier {
   var txtName = TextEditingController();
   var txtEmail = TextEditingController();
   var txtpassword = TextEditingController();
+  var txtPhone = TextEditingController();
+  var txtGoal = TextEditingController();
   var txtEmailForgotPassword = TextEditingController();
 
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   void createAccout(context) {
     auth
@@ -19,10 +23,15 @@ class AuthController extends ChangeNotifier {
           password: txtpassword.text,
         )
         .then((s) {
-          FirebaseFirestore.instance.collection("user").add({
-            'uid': s.user!.uid,
-            'name': txtName.text,
-          });
+          final user = UserModel(
+            id: s.user!.uid,
+            name: txtName.text,
+            email: txtEmail.text,
+            phone: txtPhone.text,
+            goal: txtGoal.text,
+          );
+
+          firestore.collection("users").doc(s.user!.uid).set(user.toMap());
 
           success(context, 'Usuário criado com sucesso!');
           Navigator.pop(context);
@@ -123,24 +132,35 @@ class AuthController extends ChangeNotifier {
     return user?.uid;
   }
 
-  Future<String> loggedUser() async {
-    var name = '';
+  Future<UserModel?> loggedUser() async {
+    final uid = idUser();
+    if (uid == null) return null;
 
-    await FirebaseFirestore.instance
-        .collection("user")
-        .where('uid', isEqualTo: idUser())
-        .get()
-        .then((r) {
-          name = r.docs[0].data()['name'] ?? '';
-        });
+    try {
+      final doc = await firestore.collection("users").doc(uid).get();
+      if (doc.exists) {
+        return UserModel.fromMap(doc.data()!);
+      }
+    } catch (e) {
+      print('Erro ao buscar usuário: $e');
+    }
+    return null;
+  }
 
-    return name;
+  Future<void> updatePhotoUrl(String url) async {
+    final uid = idUser();
+    if (uid != null) {
+      await firestore.collection("users").doc(uid).update({'photoUrl': url});
+      notifyListeners();
+    }
   }
 
   void limparCampos() {
     txtName.clear();
     txtEmail.clear();
     txtpassword.clear();
+    txtPhone.clear();
+    txtGoal.clear();
     txtEmailForgotPassword.clear();
   }
 }
