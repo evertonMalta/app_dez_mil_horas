@@ -1,4 +1,4 @@
-package com.example.app_muito_brabo
+package com.example.app_dez_mil_horas
 
 import io.flutter.embedding.android.FlutterActivity
 

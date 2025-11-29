@@ -28,16 +28,29 @@ class _SignupScreenState extends State<SignupScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextFormField(
-              decoration: const InputDecoration(labelText: 'Nome Completo'),              
+              decoration: const InputDecoration(labelText: 'Nome Completo'),
               controller: ctrl.txtName,
             ),
             const SizedBox(height: 16),
             TextFormField(
               decoration: const InputDecoration(labelText: 'E-mail'),
-              keyboardType: TextInputType.emailAddress,              
+              keyboardType: TextInputType.emailAddress,
               controller: ctrl.txtEmail,
             ),
-            const SizedBox(height: 16),            
+            const SizedBox(height: 16),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Telefone'),
+              keyboardType: TextInputType.phone,
+              controller: ctrl.txtPhone,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Objetivo (ex: Aprender Flutter)',
+              ),
+              controller: ctrl.txtGoal,
+            ),
+            const SizedBox(height: 16),
             TextFormField(
               decoration: const InputDecoration(labelText: 'Senha'),
               obscureText: true,
@@ -46,7 +59,7 @@ class _SignupScreenState extends State<SignupScreen> {
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-                ctrl.createAccout(context);                
+                ctrl.createAccout(context);
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),

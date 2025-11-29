@@ -40,6 +40,20 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Meus Estudos'),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              Navigator.of(context).pushNamed(AppRoutes.search);
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).pushNamed(AppRoutes.addEditTopic);
+            },
+          ),
+        ],
       ),
       body: topics.isEmpty
           ? const Center(
@@ -58,7 +72,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   elevation: 2,
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     leading: Icon(
                       Icons.library_books_outlined,
                       color: Theme.of(context).colorScheme.primary,
@@ -80,11 +97,67 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     onTap: () {
-                      Navigator.of(context).pushNamed(
-                        AppRoutes.topicDetail,
-                        arguments: topic.id,
+                      Navigator.of(
+                        context,
+                      ).pushNamed(AppRoutes.topicDetail, arguments: topic.id);
+                    },
+                    onLongPress: () {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Opções'),
+                          content: const Text(
+                            'O que deseja fazer com este tópico?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(ctx).pop();
+                                Navigator.of(context).pushNamed(
+                                  AppRoutes.addEditTopic,
+                                  arguments: {'id': topic.id, 'action': 'edit'},
+                                );
+                              },
+                              child: const Text('Editar'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(ctx).pop();
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: const Text('Confirmar Exclusão'),
+                                    content: const Text(
+                                      'Tem certeza? Isso apagará todos os sub-tópicos e sessões.',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(ctx).pop(),
+                                        child: const Text('Cancelar'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          _topicProvider.deleteTopic(topic.id);
+                                          Navigator.of(ctx).pop();
+                                        },
+                                        child: const Text(
+                                          'Excluir',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'Excluir',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
                       );
-                      print('Navegar para os detalhes de: ${topic.title}');
                     },
                   ),
                 );

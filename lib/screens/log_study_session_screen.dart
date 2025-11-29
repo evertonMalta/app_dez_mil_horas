@@ -34,7 +34,7 @@ class _LogStudySessionScreenState extends State<LogStudySessionScreen> {
     super.dispose();
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     if (_topicId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -53,7 +53,9 @@ class _LogStudySessionScreenState extends State<LogStudySessionScreen> {
     final minutes = int.tryParse(_minutesController.text);
     if (minutes == null) return;
 
-    _topicProvider.addStudySession(_topicId!, minutes);
+    await _topicProvider.addStudySession(_topicId!, minutes);
+
+    if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -68,9 +70,7 @@ class _LogStudySessionScreenState extends State<LogStudySessionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Registrar Sessão de Estudo'),
-      ),
+      appBar: AppBar(title: const Text('Registrar Sessão de Estudo')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

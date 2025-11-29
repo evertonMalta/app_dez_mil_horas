@@ -21,10 +21,26 @@ class _AddEditTopicScreenState extends State<AddEditTopicScreen> {
     _topicProvider = sl<TopicProvider>();
   }
 
+  Map<String, dynamic>? _args;
+  bool _isInit = true;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _topicId = ModalRoute.of(context)?.settings.arguments as String?;
+    if (_isInit) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null && args is Map<String, dynamic>) {
+        _args = args;
+        if (_args!['action'] == 'edit') {
+          _topicId = _args!['id'];
+          final topic = _topicProvider.getTopicById(_topicId!);
+          if (topic != null) {
+            _titleController.text = topic.title;
+          }
+        }
+      }
+      _isInit = false;
+    }
   }
 
   @override
@@ -33,26 +49,35 @@ class _AddEditTopicScreenState extends State<AddEditTopicScreen> {
     super.dispose();
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     final isValid = _formKey.currentState?.validate() ?? false;
 
     if (!isValid) {
       return;
     }
 
-
-    if (_topicId != null) {
-      _topicProvider.addTopic(_titleController.text, parentId: _topicId);
+    if (_args != null && _args!['action'] == 'edit') {
+      await _topicProvider.updateTopic(_topicId!, _titleController.text);
     } else {
-      _topicProvider.addTopic(_titleController.text);
+      // Add mode
+      String? parentId;
+      if (_args != null && _args!['action'] == 'add_subtopic') {
+        parentId = _args!['parentId'];
+      }
+      await _topicProvider.addTopic(_titleController.text, parentId: parentId);
     }
+
+    if (!mounted) return;
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isEdit = _args != null && _args!['action'] == 'edit';
     return Scaffold(
-      appBar: AppBar(title: const Text('Novo Tópico de Estudo')),
+      appBar: AppBar(
+        title: Text(isEdit ? 'Editar Tópico' : 'Novo Tópico de Estudo'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -72,7 +97,7 @@ class _AddEditTopicScreenState extends State<AddEditTopicScreen> {
                   if (value == null || value.trim().isEmpty) {
                     return 'Por favor, insira um título.';
                   }
-                  return null; 
+                  return null;
                 },
                 onFieldSubmitted: (_) => _saveForm(),
               ),

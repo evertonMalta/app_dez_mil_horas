@@ -11,18 +11,17 @@ import 'screens/log_study_session_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/about_screen.dart';
 import 'screens/topic_detail_screen.dart';
-import 'services/service_locator.dart'; 
+import 'screens/search_screen.dart';
+import 'services/service_locator.dart';
 import 'utils/app_routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 final g = GetIt.instance;
-Future<void>  main() async{
+Future<void> main() async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   setupServiceLocator();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  
+
   g.registerSingleton<AuthController>(AuthController());
 
   runApp(const MyApp());
@@ -51,7 +50,7 @@ class MyApp extends StatelessWidget {
         AppRoutes.logStudySession: (ctx) => const LogStudySessionScreen(),
         AppRoutes.profile: (ctx) => const ProfileScreen(),
         AppRoutes.about: (ctx) => const AboutScreen(),
-
+        AppRoutes.search: (ctx) => const SearchScreen(),
       },
       onUnknownRoute: (settings) {
         return MaterialPageRoute(builder: (ctx) => const LoginScreen());
